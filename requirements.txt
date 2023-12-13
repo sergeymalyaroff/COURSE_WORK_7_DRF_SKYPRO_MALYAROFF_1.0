@@ -1,0 +1,15 @@
+psycopg2-binary
+django~=4.2.8
+djangorestframework~=3.14.0
+celery~=5.3.6
+django-celery-beat~=2.5.0
+python-telegram-bot
+python-dotenv~=1.0.0
+django-cors-headers
+drf-yasg
+flake8
+autopep8
+black
+django-cors-headers
+redis
+requests~=2.31.0
