@@ -5,15 +5,13 @@ import json
 from django.contrib.auth import login as login_method, authenticate
 from django.contrib.auth.models import User
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_POST
 from rest_framework import status
+from rest_framework.decorators import api_view
 
 from .services import create_user_with_profile
 
 
-@csrf_exempt
-@require_POST
+@api_view(["POST"])
 def register(request):
     """
     Регистрация нового пользователя.
@@ -42,8 +40,7 @@ def register(request):
         return JsonResponse({'error': 'Registration failed'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-@csrf_exempt
-@require_POST
+@api_view(["POST"])
 def login(request):
 
     """

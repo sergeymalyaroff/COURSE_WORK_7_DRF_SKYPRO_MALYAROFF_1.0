@@ -4,8 +4,6 @@ import json
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
-from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_http_methods
 from django_celery_beat.models import PeriodicTask, IntervalSchedule
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
@@ -19,8 +17,7 @@ from .serializers import HabitSerializer
 from .tasks import send_habit_notification
 
 
-@csrf_exempt
-@require_http_methods(["POST"])
+@api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def create_habit(request):
     """
@@ -72,8 +69,7 @@ def create_habit(request):
     return JsonResponse({'message': 'Habit created', 'habit_id': habit.id})
 
 
-@csrf_exempt
-@require_http_methods(["PUT"])
+@api_view(["PUT"])
 @permission_classes([IsAuthenticated])
 def edit_habit(request, habit_id):
     """
@@ -120,8 +116,7 @@ def edit_habit(request, habit_id):
     return JsonResponse({'message': 'Habit updated successfully'})
 
 
-@csrf_exempt
-@require_http_methods(["DELETE"])
+@api_view(["DELETE"])
 @permission_classes([IsAuthenticated])
 def delete_habit(request, habit_id):
     """
