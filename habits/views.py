@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django_celery_beat.models import PeriodicTask, IntervalSchedule
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.pagination import PageNumberPagination
@@ -12,12 +13,22 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from users.models import UserProfile
+from users.services import csrf_exempt_api_view
 from .models import Habit
+from .serializers import CreateHabitRequestSerializer, HabitResponseSerializer, EditHabitRequestSerializer, \
+    HabitUpdateResponseSerializer
 from .serializers import HabitSerializer
 from .tasks import send_habit_notification
 
 
-@api_view(["POST"])
+@swagger_auto_schema(
+    method='post',
+    request_body=CreateHabitRequestSerializer,
+    responses={200: HabitResponseSerializer},
+    operation_description="Создание новой привычки."
+)
+@csrf_exempt_api_view(['POST'])
+# @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_habit(request):
     """
@@ -26,7 +37,7 @@ def create_habit(request):
     """
     user = User.objects.get(username=request.user.username)
 
-    data = json.loads(request.body)
+    data = request.data
     action = data.get("action")
     time = data.get("time")
     place = data.get("place")
@@ -69,6 +80,12 @@ def create_habit(request):
     return JsonResponse({'message': 'Habit created', 'habit_id': habit.id})
 
 
+@swagger_auto_schema(
+    method='put',
+    request_body=EditHabitRequestSerializer,
+    responses={200: HabitUpdateResponseSerializer},
+    operation_description="Редактирование существующей привычки."
+)
 @api_view(["PUT"])
 @permission_classes([IsAuthenticated])
 def edit_habit(request, habit_id):
@@ -116,6 +133,12 @@ def edit_habit(request, habit_id):
     return JsonResponse({'message': 'Habit updated successfully'})
 
 
+@swagger_auto_schema(
+    method='delete',
+    request_body=None,
+    responses={200: HabitUpdateResponseSerializer},
+    operation_description="Удаление привычки."
+)
 @api_view(["DELETE"])
 @permission_classes([IsAuthenticated])
 def delete_habit(request, habit_id):

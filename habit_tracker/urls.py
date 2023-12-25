@@ -54,7 +54,3 @@ urlpatterns = [
         name="schema-redoc"
     ),
 ]
-
-
-
-
